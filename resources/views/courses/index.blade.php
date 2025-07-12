@@ -125,6 +125,8 @@
                 <div>
                     <strong>{{ $course->title }}</strong>
                     <span class="category">| Category: {{ $course->category->name ?? 'N/A' }}</span>
+                    <img src="{{ url('http://127.0.0.1:8000/storage/' . $course->image)}}" alt="Image"
+                        style="width:150px;height:auto;">
                 </div>
                 <div class="actions">
                     <a href="{{ route('courses.edit', $course->id) }}">Edit</a>

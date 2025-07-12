@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Create Category</title>
     <style>
-        /* Reset */
         * {
             box-sizing: border-box;
         }
@@ -30,7 +29,6 @@
 
         .card-header {
             background-color: #0d6efd;
-            /* لون أزرق مشابه bootstrap primary */
             color: white;
             padding: 20px 25px;
             font-size: 1.5rem;
@@ -136,7 +134,6 @@
         <div class="card-header">Create New Category</div>
         <div class="card-body">
 
-            {{-- Display Validation Errors --}}
             @if($errors->any())
                 <div class="alert-danger">
                     <ul>

@@ -16,33 +16,32 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
-        $image = public_path('images/defaultImage.jpg');
+        $image = ('images/suheibcv.jpeg');
 
         User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('password'),
-            'image' => $image,
+            'password' => Hash::make('admin'),
         ]);
 
         User::create([
             'name' => 'Suheib',
             'email' => 'suheib@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('123456789'),
             'image' => $image,
         ]);
 
         User::create([
             'name' => 'Khaled',
             'email' => 'Khaled@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('123456789'),
             'image' => $image,
         ]);
 
         User::create([
             'name' => 'Ahmed',
             'email' => 'Ahmed@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('123456789'),
             'image' => $image,
         ]);
     }

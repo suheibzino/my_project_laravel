@@ -23,7 +23,7 @@ class EnrollmentsSeeder extends Seeder
 
         Enrollment::create([
             'course_id' => 2,
-            'user_id' => 2,
+            'user_id' => 3,
             'completed' => true
         ]);
     }

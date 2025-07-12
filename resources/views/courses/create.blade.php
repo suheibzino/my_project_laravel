@@ -75,12 +75,13 @@
 </head>
 
 <body>
-    <form method="POST" action="{{ route('courses.store') }}">
+    <form method="POST" action="{{ route('courses.store') }}" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
         <h2>Create Course</h2>
         <input type="text" name="title" placeholder="Title" required />
         <textarea name="description" placeholder="Description"></textarea>
-        <input type="text" name="image" placeholder="Image URL" />
+        <input type="file" name="image" placeholder="Image URL" />
         <input type="text" name="teacher" placeholder="Teacher name" required />
         <input type="number" name="hours" placeholder="Hours" required min="0" />
         <select name="category_id" required>

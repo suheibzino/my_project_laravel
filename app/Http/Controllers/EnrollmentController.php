@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EnrollmentController extends Controller
 {
@@ -16,8 +17,18 @@ class EnrollmentController extends Controller
      */
     public function index()
     {
-        $enrollments = Enrollment::with(['user', 'course'])->get();
-        return view('enrollments.index', compact('enrollments'));
+        $userId = Auth::id();
+
+        $enrollments = Enrollment::with(['course.category'])
+            ->where('user_id', $userId)
+            ->get();
+
+        // Group by category
+        $groupedByCategory = $enrollments->groupBy(function ($enrollment) {
+            return $enrollment->course->category->name ?? 'Uncategorized';
+        });
+
+        return view('enrollments.index', compact('groupedByCategory'));
     }
 
     /**
@@ -42,12 +53,15 @@ class EnrollmentController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'user_id' => 'required|exists:users,id',
-            'completed' => 'boolean'
         ]);
 
-        Enrollment::create($request->all());
-        return redirect()->route('enrollments.index')->with('success', 'Enrollment created successfully.');
+        Enrollment::create([
+            'course_id' => $request->course_id,
+            'user_id' => Auth::id(),
+            'completed' => false,
+        ]);
+
+        return redirect()->route('enrollments.index')->with('success', 'You have enrolled successfully.');
     }
 
     /**
@@ -105,6 +119,10 @@ class EnrollmentController extends Controller
     {
         $enrollment = Enrollment::findOrFail($id);
         $enrollment->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['message' => 'Enrollment deleted successfully.']);
+        }
         return redirect()->route('enrollments.index')->with('success', 'Enrollment deleted successfully.');
     }
 }

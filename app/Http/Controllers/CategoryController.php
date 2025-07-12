@@ -42,7 +42,7 @@ class CategoryController extends Controller
         ]);
 
         Category::create($request->all());
-        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+        return redirect()->route('admin.dashboard')->with('success', 'Category created successfully.');
     }
 
     /**
@@ -65,7 +65,7 @@ class CategoryController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('categories.edit', compact('category'));
+        return view('admin.dashboard', compact('category'));
     }
 
     /**
@@ -84,7 +84,7 @@ class CategoryController extends Controller
 
         $category = Category::findOrFail($id);
         $category->update($request->all());
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
+        return redirect()->route('admin.dashboard')->with('success', 'Category updated successfully.');
     }
 
     /**
@@ -97,6 +97,6 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+        return redirect()->route('admin.dashboard')->with('success', 'Category deleted successfully.');
     }
 }

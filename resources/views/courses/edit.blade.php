@@ -72,24 +72,33 @@
         button[type="submit"]:hover {
             background-color: #084cd1;
         }
+
+        img {
+            margin-bottom: 15px;
+            border-radius: 6px;
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 
 <body>
     <h2>Edit Course</h2>
-    <form method="POST" action="{{ route('courses.update', $course->id) }}">
+    <form method="POST" action="{{ route('admin.courses.update', $course->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
         <label for="title">Course Title</label>
         <input type="text" id="title" name="title" value="{{ $course->title }}" required>
-        <!-- <input type="hidden" id="title" name="title1" value="" > -->
 
         <label for="description">Description</label>
         <textarea id="description" name="description" rows="4">{{ $course->description }}</textarea>
 
-        <label for="image">Image URL</label>
-        <input type="file" id="image" name="image" value="{{ $course->image }}">
+        <label for="image">Image</label>
+        @if($course->image)
+            <img src="{{ asset('storage/' . $course->image) }}" alt="Course Image">
+        @endif
+        <input type="file" id="image" name="image">
 
         <label for="teacher">Teacher Name</label>
         <input type="text" id="teacher" name="teacher" value="{{ $course->teacher }}" required>
@@ -100,7 +109,8 @@
         <label for="category_id">Category</label>
         <select id="category_id" name="category_id" required>
             @foreach($categories as $cat)
-                <option value="{{ $cat->id }}" {{ $course->category_id == $cat->id ? 'selected' : '' }}>{{ $cat->name }}
+                <option value="{{ $cat->id }}" {{ $course->category_id == $cat->id ? 'selected' : '' }}>
+                    {{ $cat->name }}
                 </option>
             @endforeach
         </select>

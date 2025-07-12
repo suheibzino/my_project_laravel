@@ -13,10 +13,11 @@ class LessonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($courseId)
     {
-        $lessons = Lesson::with('course')->get();
-        return view('lessons.index', compact('lessons'));
+        $course = Course::with('lessons')->findOrFail($courseId);
+        $lessons = $course->lessons;
+        return view('lessons.index', compact('course', 'lessons'));
     }
 
     /**
@@ -42,12 +43,14 @@ class LessonController extends Controller
             'course_id' => 'required|exists:courses,id',
             'title' => 'required',
             'description' => 'nullable',
-            'video_url' => 'nullable|url'
+            'youtube_url' => 'nullable|url'
         ]);
 
-        Lesson::create($request->all());
-        return redirect()->route('lessons.index')->with('success', 'Lesson created successfully.');
+        $lesson = Lesson::create($request->all());
+
+        return redirect()->route('admin.lessons.show', $lesson->course_id)->with('success', 'Lesson created successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -55,9 +58,11 @@ class LessonController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Course $course)
     {
-        //
+        $lessons = $course->lessons()->orderBy('id')->get();
+
+        return view('lessons.show', compact('course', 'lessons'));
     }
 
     /**
@@ -86,13 +91,15 @@ class LessonController extends Controller
             'course_id' => 'required|exists:courses,id',
             'title' => 'required',
             'description' => 'nullable',
-            'video_url' => 'nullable|url'
+            'youtube_url' => 'nullable|url'
         ]);
 
         $lesson = Lesson::findOrFail($id);
         $lesson->update($request->all());
-        return redirect()->route('lessons.index')->with('success', 'Lesson updated successfully.');
+
+        return redirect()->route('admin.lessons.show', $lesson->course_id)->with('success', 'Lesson updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -103,7 +110,10 @@ class LessonController extends Controller
     public function destroy($id)
     {
         $lesson = Lesson::findOrFail($id);
+        $courseId = $lesson->course_id;
         $lesson->delete();
-        return redirect()->route('lessons.index')->with('success', 'Lesson deleted successfully.');
+
+        return redirect()->route('admin.lessons.show', $courseId)->with('success', 'Lesson deleted successfully.');
     }
+
 }

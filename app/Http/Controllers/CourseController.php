@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -39,24 +38,23 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'image' => 'nullable',
-            'teacher' => 'required',
-            'hours' => 'required|integer',
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image',
+            'teacher' => 'required|string|max:255',
+            'hours' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        Course::create($request->all());
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('images', 'public');
+            $validated['image'] = $path;
+        }
 
-        //          Course::create([
-        //     'title' =>$,
-        //     'email' => $request->email,
-        //     'password' => Hash::make($request->password),
-        //     'image' => $request->image,
-        // ]);
-        return redirect()->route('courses.index')->with('success', 'Course created successfully.');
+        Course::create($validated);
+
+        return redirect()->route('admin.dashboard')->with('success', 'success add course');
     }
 
     /**
@@ -67,7 +65,8 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        //
+        $course = Course::with('lessons')->findOrFail($id);
+        return view('courses.show', compact('course'));
     }
 
     /**
@@ -92,29 +91,28 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'image' => 'nullable',
-            'teacher' => 'required',
-            'hours' => 'required|integer',
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image',
+            'teacher' => 'required|string|max:255',
+            'hours' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
         ]);
 
-         
-
         $course = Course::findOrFail($id);
-// $phone = $request->title1.$request->title;
-//         $course->update([
-//             'title' =>$,
-//             'email' => $request->email,
-//             'password' => Hash::make($request->password),
-//             'image' => $request->image,
-//         ]);
 
-        $course->update($request->all());
-        return redirect()->route('courses.index')->with('success', 'Course updated successfully.');
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('images', 'public');
+        } else {
+            $validated['image'] = $course->image;
+        }
+
+        $course->update($validated);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Course updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -126,6 +124,6 @@ class CourseController extends Controller
     {
         $course = Course::findOrFail($id);
         $course->delete();
-        return redirect()->route('courses.index')->with('success', 'Course deleted successfully.');
+        return redirect()->route('admin.dashboard')->with('success', 'Course deleted successfully.');
     }
 }

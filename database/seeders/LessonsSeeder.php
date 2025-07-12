@@ -15,18 +15,33 @@ class LessonsSeeder extends Seeder
      */
     public function run()
     {
-         Lesson::create([
-            'course_id' => 1,
-            'title' => 'Introduction to Laravel',
-            'description' => 'Setup and basics',
-            'video_url' => 'https://www.youtube.com/watch?v=1NDh-AWNwcM&authuser=0'
-        ]);
+        $lessons = [
+            [
+                'title' => 'Introduction',
+                'description' => 'Getting started with the course.',
+                'video_url' => 'https://www.youtube.com/watch?v=q-_ezD9Swz4&t=52s&pp=ygUQbGVhcm4gcHJvZ3JhbWluZw%3D%3D'
+            ],
+            [
+                'title' => 'Core Concepts',
+                'description' => 'Exploring core topics of the subject.',
+                'video_url' => 'https://www.youtube.com/watch?v=zOjov-2OZ0E&pp=ygUQbGVhcm4gcHJvZ3JhbWluZw%3D%3D'
+            ],
+            [
+                'title' => 'Project Demo',
+                'description' => 'Final project walkthrough.',
+                'video_url' => 'https://www.youtube.com/watch?v=CIRGjwYgdT4&pp=ygUQbGVhcm4gcHJvZ3JhbWluZ9IHCQnBCQGHKiGM7w%3D%3D'
+            ]
+        ];
 
-        Lesson::create([
-            'course_id' => 2,
-            'title' => 'Introduction to Java',
-            'description' => 'Java Language Basics',
-            'video_url' => 'https://www.youtube.com/watch?v=04HIk1d-Pxw&list=PLCi9_wQUeSMU9lnFeub4Vb27S5TnwesCy&index=3&pp=iAQB'
-        ]);
+        for ($courseId = 1; $courseId <= 24; $courseId++) {
+            foreach ($lessons as $lesson) {
+                Lesson::create([
+                    'course_id' => $courseId,
+                    'title' => $lesson['title'],
+                    'description' => $lesson['description'],
+                    'video_url' => $lesson['video_url'],
+                ]);
+            }
+        }
     }
 }

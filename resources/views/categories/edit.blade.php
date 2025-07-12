@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +19,7 @@
             margin: 40px auto;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -80,36 +81,38 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h2>Edit Category</h2>
+    <div class="container">
+        <h2>Edit Category</h2>
 
-    {{-- عرض الأخطاء --}}
-    @if ($errors->any())
-        <div class="alert">
-            <ul style="margin: 0; padding-left: 20px;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+        @if ($errors->any())
+            <div class="alert">
+                <ul style="margin: 0; padding-left: 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    <form method="POST" action="{{ route('categories.update', $category->id) }}">
-        @csrf
-        @method('PUT')
+        <form method="POST" action="{{ route('categories.update', $category->id) }}">
+            @csrf
+            @method('PUT')
 
-        <label for="name">Category Name</label>
-        <input type="text" id="name" name="name" value="{{ old('name', $category->name) }}" required>
+            <label for="name">Category Name</label>
+            <input type="text" id="name" name="name" value="{{ old('name', $category->name) }}" required>
 
-        <label for="description">Description</label>
-        <textarea id="description" name="description" rows="4">{{ old('description', $category->description) }}</textarea>
+            <label for="description">Description</label>
+            <textarea id="description" name="description"
+                rows="4">{{ old('description', $category->description) }}</textarea>
 
-        <button type="submit">Update Category</button>
-        <a href="{{ route('categories.index') }}" class="back-link">Cancel</a>
-    </form>
-</div>
+            <button type="submit">Update Category</button>
+            <a href="{{ route('categories.index') }}" class="back-link">Cancel</a>
+        </form>
+    </div>
 
 </body>
+
 </html>

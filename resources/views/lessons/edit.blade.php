@@ -97,7 +97,6 @@
     <div class="container">
         <h2>Edit Lesson</h2>
 
-        <!-- Example error display (Laravel style) -->
         @if ($errors->any())
             <div class="error-box">
                 <strong>Whoops!</strong> Please fix the following errors:

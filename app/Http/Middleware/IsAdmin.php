@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Auth;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user() && auth()->user()->role === 'admin') {
+        if (Auth::check() && Auth::user()->email === 'admin@gmail.com') {
             return $next($request);
         }
         abort(403);

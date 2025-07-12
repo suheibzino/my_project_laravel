@@ -32,19 +32,18 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
+
+            if (Auth::user()->email === 'admin@gmail.com') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->intended(RouteServiceProvider::HOME);
         }
-
-        $request->session()->regenerate();
-
-        if (Auth::user()->email === 'admin@gmail.com' && Hash::check('123456789', Auth::user()->password)) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return back()->withErrors([
+            'email' => 'Invalid credentials.',
+        ]);
     }
 
     /**

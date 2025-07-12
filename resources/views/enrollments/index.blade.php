@@ -2,133 +2,186 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Enrollments</title>
+    <meta charset="UTF-8">
+    <title>My Enrolled Courses</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
-            margin: 30px;
-            color: #333;
-        }
-
-        h2 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        a.new-enrollment {
-            display: inline-block;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-bottom: 20px;
-            transition: background-color 0.3s ease;
-        }
-
-        a.new-enrollment:hover {
-            background-color: #218838;
-        }
-
-        p.success-message {
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            padding: 12px 20px;
-            border-radius: 5px;
-            color: #155724;
-            width: fit-content;
-            margin: 10px auto 20px auto;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        ul.enrollment-list {
-            list-style: none;
+            background: #f8f9fa;
+            margin: 0;
             padding: 0;
-            max-width: 600px;
-            margin: 0 auto;
         }
 
-        ul.enrollment-list li {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 7px rgb(0 0 0 / 0.1);
-            margin-bottom: 15px;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1rem;
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
         }
 
-        ul.enrollment-list li .actions {
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0d6efd;
+        }
+
+        .category-tabs {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 30px;
             gap: 10px;
-            align-items: center;
         }
 
-        ul.enrollment-list li .actions a,
-        ul.enrollment-list li .actions button {
-            background-color: transparent;
-            border: none;
-            color: #007bff;
+        .category-tab {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 25px;
             cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
+            text-transform: capitalize;
         }
 
-        ul.enrollment-list li .actions a:hover,
-        ul.enrollment-list li .actions button:hover {
-            background-color: #007bff;
+        .category-tab.active,
+        .category-tab:hover {
+            background-color: #0d6efd;
             color: white;
         }
 
-        ul.enrollment-list li .status {
-            font-size: 1.2rem;
-            margin-right: 15px;
+        .grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
         }
 
-        form {
-            display: inline;
+        .grid.active {
+            display: grid;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 18px;
+            margin: 0 0 10px;
+            color: #343a40;
+        }
+
+        .card-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 15px;
+        }
+
+        .btn-unenroll {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        .btn-unenroll:hover {
+            background-color: #c82333;
+        }
+
+        .no-courses {
+            text-align: center;
+            margin-top: 50px;
+            color: #777;
         }
     </style>
 </head>
 
 <body>
-    <h2>Enrollments</h2>
-    <a href="{{ route('enrollments.create') }}" class="new-enrollment">+ New Enrollment</a>
 
-    @if(session('success'))
-        <p class="success-message">{{ session('success') }}</p>
-    @endif
+    <div class="container">
+        <h1>My Enrolled Courses</h1>
 
-    <ul class="enrollment-list">
-        @foreach($enrollments as $enrollment)
-            <li>
-                <div>
-                    {{ $enrollment->user->name }} - {{ $enrollment->course->title }}
+        @if($groupedByCategory->isEmpty())
+            <p class="no-courses">You have not enrolled in any courses yet.</p>
+        @else
+            <div class="category-tabs">
+                @foreach($groupedByCategory as $categoryName => $enrollments)
+                    <div class="category-tab" data-category="{{ Str::slug($categoryName) }}">{{ $categoryName }}</div>
+                @endforeach
+            </div>
+
+            @foreach($groupedByCategory as $categoryName => $enrollments)
+                <div class="grid" id="{{ Str::slug($categoryName) }}">
+                    @foreach($enrollments as $enrollment)
+                        <div class="card">
+                            <a href="{{ route('lessons.byCourse', $enrollment->course->id) }}">
+                                <img src="{{ asset('storage/' . $enrollment->course->image) }}"
+                                    alt="{{ $enrollment->course->title }}">
+                                <div class="card-body">
+                                    <h3 class="card-title">{{ $enrollment->course->title }}</h3>
+                                    <p class="card-meta">Instructor: {{ $enrollment->course->teacher }}</p>
+                                    <p class="card-meta">Hours: {{ $enrollment->course->hours }}</p>
+                                </div>
+                            </a>
+                            <div class="actions">
+                                <form action="{{ route('enrollments.destroy', $enrollment->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to unenroll?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-unenroll">Unenroll</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                <div class="actions">
-                    <span class="status">{{ $enrollment->completed ? '✅' : '❌' }}</span>
-                    <a href="{{ route('enrollments.edit', $enrollment->id) }}">Edit</a>
-                    <form action="{{ route('enrollments.destroy', $enrollment->id) }}" method="POST"
-                        onsubmit="return confirm('Are you sure you want to delete this enrollment?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit">Delete</button>
-                    </form>
-                </div>
-            </li>
-        @endforeach
-    </ul>
+            @endforeach
+        @endif
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.category-tab');
+        const grids = document.querySelectorAll('.grid');
+
+        if (tabs.length > 0) {
+            tabs[0].classList.add('active');
+            const defaultCategory = tabs[0].dataset.category;
+            document.getElementById(defaultCategory).classList.add('active');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    grids.forEach(g => g.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.category).classList.add('active');
+                });
+            });
+        }
+    </script>
+
 </body>
 
 </html>

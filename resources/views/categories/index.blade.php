@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Categories</title>
     <style>
-        /* Reset */
         * {
             box-sizing: border-box;
         }
@@ -30,7 +29,6 @@
 
         .header {
             background-color: #0d6efd;
-            /* Bootstrap primary blue */
             color: white;
             padding: 15px 25px;
             display: flex;

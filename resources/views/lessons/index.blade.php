@@ -3,107 +3,109 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lessons</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
         }
 
         h2 {
-            color: #333;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
-        .success-message {
-            color: green;
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .lesson-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #34495e;
             margin-bottom: 10px;
         }
 
-        .btn {
-            padding: 6px 12px;
-            margin: 5px;
-            border: none;
+        .lesson-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .youtube-link {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 16px;
             border-radius: 5px;
             text-decoration: none;
-            color: white;
-            background-color: #007BFF;
-            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+            transition: background-color 0.3s;
         }
 
-        .btn-danger {
-            background-color: #dc3545;
+        .youtube-link:hover {
+            background-color: #c0392b;
         }
 
-        .btn-edit {
-            background-color: #28a745;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            padding: 10px;
-        }
-
-        td {
-            padding: 8px;
+        .no-lessons {
+            text-align: center;
+            color: #999;
+            margin-top: 40px;
         }
     </style>
 </head>
 
 <body>
-    <h2>Lessons</h2>
+    <div class="container">
+        <h2>Lessons for: {{ $course->title }}</h2>
 
-    @if(session('success'))
-        <p class="success-message">{{ session('success') }}</p>
-    @endif
-
-    <a href="{{ route('lessons.create') }}" class="btn">+ New Lesson</a>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Course</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($lessons as $lesson)
-                <tr>
-                    <td>{{ $lesson->title }}</td>
-                    <td>{{ $lesson->course->title ?? 'N/A' }}</td>
-                    <td>
-                        <a href="{{ route('lessons.edit', $lesson->id) }}" class="btn btn-edit">Edit</a>
-                    </td>
-                    <td>
-                        <form action="{{ route('lessons.destroy', $lesson->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="4">No lessons available.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+        @if($course->lessons->isEmpty())
+            <p class="no-lessons">No lessons available yet.</p>
+        @else
+            <div class="lessons-grid">
+                @foreach($course->lessons as $lesson)
+                    <div class="lesson-card">
+                        <div class="lesson-title">{{ $lesson->title }}</div>
+                        <div class="lesson-desc">{{ $lesson->description }}</div>
+                        @if($lesson->video_url)
+                            <a href="{{ $lesson->video_url }}" class="youtube-link" target="_blank">Watch on YouTube</a>
+                        @else
+                            <span class="lesson-desc" style="color: #aaa;">No video link available</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
 </body>
 
 </html>
